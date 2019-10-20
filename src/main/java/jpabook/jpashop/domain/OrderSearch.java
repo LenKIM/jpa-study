@@ -9,7 +9,4 @@ public class OrderSearch {
 
     OrderStatus orderStatus;
     String memberName;
-
-
-
 }
