@@ -1,6 +1,8 @@
 package jpabook.jpashop.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.GeneratedValue;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +24,7 @@ public class Order {
     @Column(name = "order_id")
     private long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id") // FK가 member_id가 된다. 주인으로 정한다.
     private Member member;
