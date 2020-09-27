@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -90,5 +91,17 @@ public class Order {
         return orderItems.stream()
                 .mapToInt(OrderItem::getTotalPrice)
                 .sum();
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+            "id=" + id +
+            ", member=" + member +
+            ", orderItems=" + orderItems +
+            ", delivery=" + delivery +
+            ", orderDate=" + orderDate +
+            ", status=" + status +
+            '}';
     }
 }

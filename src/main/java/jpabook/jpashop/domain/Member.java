@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
 import lombok.Getter;
@@ -25,4 +26,13 @@ public class Member {
     @OneToMany(mappedBy = "member") // 나는 주인이 아니다. 읽기 전용이 되는 것이다.
     private List<Order> orders = new ArrayList();
 
+    @Override
+    public String toString() {
+        return "Member{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", address=" + address +
+            ", orders=" + orders +
+            '}';
+    }
 }
