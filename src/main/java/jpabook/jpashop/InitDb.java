@@ -1,5 +1,7 @@
 package jpabook.jpashop;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -8,6 +10,7 @@ import jpabook.jpashop.domain.Delivery;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
+import jpabook.jpashop.domain.TempItem;
 import jpabook.jpashop.domain.item.Book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,16 +22,16 @@ public class InitDb {
   private final InitService initService;
 
   // 스프링 라이프 사이클 때문에, 잘 안됀다?
-  @PostConstruct
-  public void init() {
-    initService.dbInit1();
-    initService.dbInit2();
-  }
+//  @PostConstruct
+//  public void init() {
+//    initService.dbInit1();
+//    initService.dbInit2();
+//  }
 
   @Component
   @Transactional
   @RequiredArgsConstructor
-  static class InitService {
+  public static class InitService {
 
     private final EntityManager em;
 

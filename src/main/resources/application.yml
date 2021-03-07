@@ -6,13 +6,15 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-
       ddl-auto: create
     properties:
       hibernate:
         #        show_sql: true // 시스템에서 보여주는 것
         format_sql: true
         default_batch_fetch_size: 1000
+#        enable_lazy_load_no_trans: false
+
+#    open-in-view: false
 
 logging.level:
   org.hibernate.SQL: debug # 로그에서 보여주는 것

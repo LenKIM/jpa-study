@@ -46,11 +46,8 @@ public class OrderSimpleApiController {
     List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
 
     List<SimpleOrderDto> result = orders.stream()
-
         .map(o -> new SimpleOrderDto(o)).collect(toList());
-
     return result;
-
   }
 
   @GetMapping("/api/v3/simple-orders")
@@ -62,7 +59,9 @@ public class OrderSimpleApiController {
   }
 
   /**
-   * V4. JPA에서 DTO로 바로 조회 * - 쿼리 1번 호출 * - select 절에서 원하는 데이터만 선택해서 조회
+   * V4. JPA에서 DTO로 바로 조회
+   * - 쿼리 1번 호출
+   * - select 절에서 원하는 데이터만 선택해서 조회
    */
   @GetMapping("/api/v4/simple-orders")
   public List<OrderSimpleQueryDto> ordersV4() {
@@ -87,6 +86,4 @@ public class OrderSimpleApiController {
       address = order.getDelivery().getAddress();
     }
   }
-
-
 }

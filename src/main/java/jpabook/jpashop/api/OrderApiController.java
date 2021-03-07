@@ -6,6 +6,9 @@ import static java.util.stream.Collectors.toList;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import jpabook.jpashop.InitDb.InitService;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
@@ -16,7 +19,12 @@ import jpabook.jpashop.repository.order.query.OrderFlatDto;
 import jpabook.jpashop.repository.order.query.OrderItemQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
+import jpabook.jpashop.service.ServiceTest;
 import lombok.Data;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.orm.jpa.vendor.HibernateJpaSessionFactoryBean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +43,7 @@ public class OrderApiController {
 
   @GetMapping("/api/v1/orders")
   public List<Order> orderV1() {
-    List<Order> allByCriteria = orderRepository.findAllByCriteria(new OrderSearch());
+    List<Order> allByCriteria = orderRepository.findAll(new OrderSearch());
     for (Order order : allByCriteria) {
       order.getMember().getName();
       order.getDelivery().getAddress();
@@ -46,15 +54,36 @@ public class OrderApiController {
     return allByCriteria;
   }
 
+  @Autowired
+  ServiceTest orderService;
+
+  @Autowired
+  InitService initService;
+
   @GetMapping("/api/v2/orders")
-  public List<OrderDto> ordersV2() {
+  public List<OrderDto> ordersV2() throws InterruptedException {
+    initService.dbInit1();
+    initService.dbInit2();
+    Order one = orderService.getOneOrder(4L);
+//    System.out.println(one.getDelivery().getAddress().getCity());
+//    ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-    List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
-
-    List<OrderDto> result = orders.stream()
-        .map(OrderDto::new).collect(toList());
-    return result;
-
+//    CompletableFuture.runAsync(() -> {
+//      try {
+//        TransactionStatus transactionStatus = TransactionAspectSupport.currentTransactionStatus();
+//      } catch (Exception e){
+//        System.out.println("XXX");
+//      }
+//      System.out.println(Thread.currentThread().getName());
+////      orderRepository.findOne(11L);
+//      System.out.println(one.getDelivery().getAddress().getCity());
+////      List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
+////      List<OrderDto> result = orders.stream()
+////          .map(OrderDto::new).collect(toList());
+////      result.stream().forEach(System.out::println);
+//
+//    },executorService);
+    return null;
   }
 
   @GetMapping("/api/v3/orders")
@@ -113,7 +142,6 @@ public class OrderApiController {
           .collect(toList());
 
     }
-
   }
 
   @Data
@@ -153,7 +181,7 @@ public class OrderApiController {
                 o.getOrderStatus(),
                 o.getAddress()),
             mapping(o -> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(),
-                    o.getCount()), toList()))).entrySet()
+                o.getCount()), toList()))).entrySet()
         .stream()
         .map(e -> new OrderQueryDto(e.getKey().getOrderId(),
             e.getKey().getName(),

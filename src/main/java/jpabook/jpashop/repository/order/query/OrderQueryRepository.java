@@ -16,15 +16,17 @@ public class OrderQueryRepository {
   /**
    * 컬렉션은 별도로 조회 * Query: 루트 1번, 컬렉션 N 번 * 단건 조회에서 많이 사용하는 방식
    */
-  public List<OrderQueryDto> findOrderQueryDtos() { //루트 조회(toOne 코드를 모두 한번에 조회)
+  public List<OrderQueryDto> findOrderQueryDtos() {
 
-    List<OrderQueryDto> result = findOrders(); //루프를 돌면서 컬렉션 추가(추가 쿼리 실행)
+    //루트 조회(toOne 코드를 모두 한번에 조회)
+    List<OrderQueryDto> result = findOrders();
+
+    //루프를 돌면서 컬렉션 추가(추가 쿼리 실행)
     result.forEach(o -> {
       List<OrderItemQueryDto> orderItems = findOrderItems(o.getOrderId());
       o.setOrderItems(orderItems);
     });
     return result;
-
   }
 
   private List<OrderItemQueryDto> findOrderItems(Long orderId) {
