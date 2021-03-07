@@ -2,7 +2,7 @@
 
 
 
-![image-20210307133116822](/Users/len/Library/Application Support/typora-user-images/image-20210307133116822.png)
+![image-20210307133116822](https://tva1.sinaimg.cn/large/008eGmZEgy1gob9sjx2jxj310o0u041m.jpg)
 
 # 기능 목록
 
@@ -23,7 +23,7 @@
   - 상품을 카테고리로 구분할 수 있다.
   - 상품 주문시 배송 정보를 입력할 수 있다.
 
-![image-20210307133240060](/Users/len/Library/Application Support/typora-user-images/image-20210307133240060.png)
+![image-20210307133240060](https://tva1.sinaimg.cn/large/008eGmZEgy1gob9smjqtbj31220j6q56.jpg)
 
 ## 회원, 주문, 상품의 관계
 
