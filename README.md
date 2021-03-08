@@ -90,3 +90,120 @@
 > 참고: 외래 키가 있는 곳을 연관관계의 주인으로 정해라.
 >
 > 연관관계의 주인은 단순히 외래 키를 누가 관리하냐의 문제이지 비즈니스상 우위에 있다고 주인으로 정하면 안된다.. 예를 들어서 자동차와 바퀴가 있으면, 일대다 관계에서 항상 다쪽에 외래 키가 있으므로 외래 키가 있는 바퀴를 연관관계의 주인으로 정하면 된다. 물론 자동차를 연관관계의 주인으로 정하는 것이 불가능 한 것은 아니지만, 자동차를 연관관계의 주인으로 정하면 자동차가 관리하지 않는 바퀴 테이블의 외래 키 값이 업데이트 되므로 관리와 유지보수가 어렵고, 추가적으로 별도의 업데이트 쿼리가 발생하는 성능 문제도 있다.
+
+
+
+---
+
+[학습 노트]
+
+왜 멤버가 팀을 선택해야 하는가?
+
+팀이 멤버를 선택하면 안되는가?
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+public class Member {
+
+  @Id
+  @GeneratedValue
+  @Column(name = "member_id")
+  private Long id;
+
+  private String name;
+
+  @Embedded
+  private Address address;
+
+  @OneToMany(mappedBy = "member") // 외래키가 있는 쪽에 mappedBy 설정
+  private List<Order> orders = new ArrayList<>();
+}
+
+```
+
+```java
+
+@Entity(name = "orders")
+@Getter
+@Setter
+public class Order {
+
+  @Id
+  @GeneratedValue
+  @Column(name = "order_id")
+  private Long id;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id")
+  private Member member;
+  
+}
+```
+
+
+
+Order와 Member의 연관관계는 양방향이다. 어떻게 아는가? `Order`와 `Member`가 모두 `@ManyToOne`,`@OneToMany` 를 가지고 있으며, ` @JoinColumn(name="member_id")` 가 FK를 설정한다.
+
+이 때, mappedBy의 정체를 이해하자. 
+
+member_id를 외래 키로 동작되어 양방향 조회가 가능하다. 만약 Member의 Order 를 알고 싶다면, member_id로 Member에 조인해서 조회가 가능하다.
+
+![image-20210308095033578](https://tva1.sinaimg.cn/large/008eGmZEgy1goc7lwpo3hj311u0emmy6.jpg)
+
+위는 데이터베이스 관점에서 모델링된 형태이고, 아래는 객체지향 프로그래밍에서 객체간의 관계이다.
+
+![image-20210308095728199](https://tva1.sinaimg.cn/large/008eGmZEgy1goc7t13kedj310o0u0416.jpg)
+
+
+
+객체의 연관관계는 사실 두 개의 단방향으로 존재.
+
+엔티티의 양방향 매핑으로 설정하면 객체의 참조는 둘인데 반해, 테이블은 하나의 외래 키만을 사용.
+
+양쪽에서 접근가능하여 데이터를 변경할 수 있지만, JPA가 만든 규칙은 다음과 같다.
+
+한쪽에서만 테이블의 외래키(FK)를 바꿀 수 있도록 하는 것이다. 그 관리자를 "연관관계의 주인"이라 정한다.
+
+MappedBy는 어떤 객체가 주인인지를 표시하는 어노테이션으로, 위 코드에서 `mappedBy(member)` 라면, mebmer를 갖고 있는 **Order가 Member[FK] 의 주인이 되는 것이다.**
+
+>\- 오직 주인만 FK를 관리한다.
+>
+> - 주인이 아닌 곳에서는 mappedBy로 주인을 명시해야한다.
+
+즉, FK가 있는 곳을 주인으로 한다.
+
+
+
+***그런데 바로, 아래 OrderItem 의 코드를 작성할 때는 위와같이 하지 않았다. 왜?***
+
+나처럼 생각한 사람이 바로 있었다. https://www.inflearn.com/questions/39523
+
+![image-20210308153403182](https://tva1.sinaimg.cn/large/008eGmZEgy1gochjagv0jj30p10cxtb0.jpg)
+
+>  연관관계의 주인이라는 말의 뜻은, 단순히 외래 키를 누가 관리하냐의 문제이지 비즈니스상 우위에 있다고 주인으로 정하는 것이 아니다. 예를 들어서 자동차와 바퀴가 있으면, 일대다 관계에서 항상 다쪽에 외래 키가 있으므로 외래 키가 있는 바퀴를 연관관계의 주인으로 정하면 된다. 물론 자동차를 연관관계의 주인으로 정하는 것이 불가능 한 것은 아니지만, 자동차를 연관관계의 주인으로 정하면 자동차가 관리하지 않는 바퀴 테이블의 외래 키 값이 업데이트 되므로 관리와 유지보수가 어렵고, 추가적으로 별도의 업데이트 쿼리가 발생하는 성능 문제도 있 다. 자세한 내용은 JPA 기본편을 참고하자.
+>
+> \- 김영한의 "실전, 스프링 부트와 JPA활용1 중..."
+
+
+
+---
+
+![image-20210308155840742](https://tva1.sinaimg.cn/large/008eGmZEgy1goci8vkyvyj31gm0lagqb.jpg)
+
+
+
+`@Inheritance(strategy = InheritanceType.SINGLE_TABLE)` 의미는 무엇인가?
+
