@@ -207,3 +207,9 @@ MappedBy는 어떤 객체가 주인인지를 표시하는 어노테이션으로,
 
 `@Inheritance(strategy = InheritanceType.SINGLE_TABLE)` 의미는 무엇인가?
 
+
+
+
+
+---
+
